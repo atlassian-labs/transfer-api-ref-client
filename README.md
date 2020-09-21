@@ -3,13 +3,13 @@
 [![Atlassian license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](LICENSE) ![version](https://img.shields.io/badge/version-0.1-blue.svg?style=flat-square) ![Python version](https://img.shields.io/badge/Python-3.3.7-blue.svg?style=flat-square) ![Build Status](https://img.shields.io/github/workflow/status/atlassian-labs/transfer-api-ref-client/transfer-api-ref-client/master?style=flat-square)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 
-Welcome to the reference API client implementation for the https://transfer.atlassian.com API. This client is provided as a reference implementation for the provided REST API which allows resumable and chunked file uploads to https://transfer.atlassian.com. It is provided as a command-line tool (CLI).
+Welcome to the reference API client implementation for the [transfer.atlassian.com REST API](https://transfer.atlassian.com/swagger-ui/index.html?configUrl=/api-docs/swagger-config). This client is provided as a reference implementation for the provided [REST API](https://transfer.atlassian.com/swagger-ui/index.html?configUrl=/api-docs/swagger-config) which allows resumable and chunked file uploads to https://transfer.atlassian.com. It is provided as a command-line tool (CLI).
 
 The tool performs file upload by chunks and can resume file upload after failures. If you are faced with failure during file upload, you can run the tool again and the tool skip chunks uploaded before and upload the missed file fragments automatically.
 
 ## Usage (simple)
 
-First, obtain an API token from https://transfer.atlassian.com/auth_token
+First, obtain an API token from transfer.atlassian.com/auth_token
 
 Then use your favorite terminal to run the reference client to upload one or multiple files:
 
