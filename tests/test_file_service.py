@@ -14,7 +14,7 @@ class TestClass(unittest.TestCase):
 
         block_size = FileService.get_block_size("test")
 
-        self.assertEquals(default_block_size, block_size)
+        self.assertEqual(default_block_size, block_size)
 
     @patch("os.path.getsize")
     def test_block_size_when_chunks_exceeded_limit(self, getsize):
@@ -24,14 +24,14 @@ class TestClass(unittest.TestCase):
 
         block_size = FileService.get_block_size("test")
 
-        self.assertNotEquals(default_block_size, block_size)
+        self.assertNotEqual(default_block_size, block_size)
 
     def test_generate_etag(self):
         expected_etag = 'a17c9aaa61e80a1bf71d0d850af4e5baa9800bbd-4'
 
         actual_etag = FileService.generate_etag(b'data')
 
-        self.assertEquals(expected_etag, actual_etag)
+        self.assertEqual(expected_etag, actual_etag)
 
 
 if __name__ == '__main__':
