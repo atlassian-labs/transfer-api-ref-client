@@ -1,0 +1,119 @@
+import io
+import itertools
+import os
+from concurrent import futures
+from concurrent.futures import ThreadPoolExecutor
+from operator import itemgetter
+from threading import Lock
+
+import click
+import requests
+from colorama import init, Fore
+from magic import from_file
+from retrying import retry
+from tqdm import tqdm
+
+from src.custom_exceptions import AuthException
+from src.file_service import FileService
+
+
+class FileUploading:
+    def __init__(self, file, issue_key, user, auth_token, base_url):
+        self.file = file
+        self.issue_key = issue_key
+        self.user = user
+        self.auth_token = auth_token
+        self.base_url = base_url
+
+    def run(self):
+        init()
+        auth = (self.user, self.auth_token)
+        block_size = FileService.get_block_size(self.file)
+        file_size = os.path.getsize(self.file)
+        expected_chunks = (file_size // block_size) + 1
+        lock = Lock()
+        click.echo('Preparing file to upload: %s' % click.format_filename(self.file))
+        t = tqdm(total=expected_chunks, unit='B', unit_scale=False)
+        t.set_description("Uploading progress")
+        count = itertools.count()
+        try:
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                uploads = []
+                with open(self.file, 'rb') as infile:
+                    buf = infile.read(block_size)
+                    while len(buf) > 0:
+                        uploads.append(
+                            executor.submit(self.process_chunk, self.base_url, auth, self.issue_key, buf, lock, t,
+                                            count))
+                        buf = infile.read(block_size)
+                    chunk_list = [future.result() for future in futures.as_completed(uploads)]
+            self.create_file_chunked(self.base_url, auth, chunk_list, self.file, self.issue_key)
+            t.update(1)
+            t.close()
+            click.echo('The file has been successfully uploaded and attached to the ticket %s' % self.issue_key)
+        except AuthException as e:
+            t.close()
+            print(Fore.RED + "[ERROR] Authentication error. Check your API credentials.")
+            raise AuthException(e.message)
+
+    def process_chunk(self, base_url, auth, issue_key, buf, lock, progress, count):
+        index = next(count)
+        etag = FileService.generate_etag(buf)
+        response = self.check_if_chunk_exists(base_url, auth, issue_key, [etag])
+        if not response["data"]["results"][etag]["exists"]:
+            self.upload_chunk(base_url, auth, issue_key, etag, buf)
+        with lock:
+            progress.update(1)
+        return etag, index
+
+    @retry(wait_exponential_multiplier=1000, wait_exponential_max=5000, stop_max_attempt_number=5)
+    def create_file_chunked(self, base_url, auth, chunk_list, file, issue_key):
+        chunk_list.sort(key=itemgetter(1))
+
+        etagList = []
+        for n in chunk_list:
+            etagList.append(n[0])
+
+        headers = {"Content-Type": "application/json"}
+        response = requests.post(base_url + "/api/upload/" + issue_key + "/file/chunked",
+                                 auth=auth,
+                                 headers=headers,
+                                 json={"chunks": self.__get_chunks_json(etagList),
+                                       "name": os.path.basename(file),
+                                       "mimeType": from_file(file, mime=True)})
+        self.__check_status_code(response.status_code)
+        return response.json()
+
+    @retry(wait_exponential_multiplier=100, wait_exponential_max=5000, stop_max_attempt_number=5)
+    def check_if_chunk_exists(self, base_url, auth, issue_key, chunk_list):
+        headers = {"Content-Type": "application/json"}
+        response = requests.post(base_url + "/api/upload/" + issue_key + "/chunk/probe",
+                                 auth=auth,
+                                 headers=headers,
+                                 json={"chunks": self.__get_chunks_json(chunk_list)})
+        self.__check_status_code(response.status_code)
+        return response.json()
+
+    @retry(wait_exponential_multiplier=100, wait_exponential_max=5000, stop_max_attempt_number=5)
+    def upload_chunk(self, base_url, auth, issue_key, etag, buf):
+        response = requests.post(base_url + "/api/upload/" + issue_key + "/chunk/" + etag,
+                                 auth=auth,
+                                 stream=True,
+                                 files={"chunk": io.BytesIO(buf)})
+        self.__check_status_code(response.status_code)
+
+    @staticmethod
+    def __check_status_code(status_code):
+        if status_code == 401:
+            raise AuthException("Authentication required")
+        if not (status_code == 200 or status_code == 201):
+            raise Exception('Could not upload file, please try later again')
+
+    @staticmethod
+    def __get_chunks_json(chunk_list):
+        chunks_json = []
+        for val in chunk_list:
+            etag = val.partition("-")
+            chunks_json.append({"hash": etag[0], "size": etag[2]})
+
+        return chunks_json
