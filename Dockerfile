@@ -5,3 +5,4 @@ RUN pip install -r requirements.txt
 WORKDIR /app
 COPY . /app
 ENTRYPOINT [ "python3", "app.py" ]
+
