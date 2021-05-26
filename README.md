@@ -34,7 +34,7 @@ Steps:
 
        docker run --rm -it --name transfer-reference-client \
             --volume <HOST_PATH>/:/upload \
-            transfer-reference-client:latest \
+            transfer-reference-client:latest python3 app.py \
             --file /upload/<FILE_NAME> \
             --issue_key=<ISSUE_KEY> \
             --user=<API_USER_ID> \
