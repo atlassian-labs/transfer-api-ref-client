@@ -2,7 +2,9 @@
 import click
 
 from src.file_uploading import FileUploading
+import sys
 
+sys.tracebacklimit = 0
 
 @click.command()
 @click.option("--file", required=True)

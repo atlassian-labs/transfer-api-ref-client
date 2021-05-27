@@ -5,6 +5,7 @@ from concurrent import futures
 from concurrent.futures import ThreadPoolExecutor
 from operator import itemgetter
 from threading import Lock
+from threading import BoundedSemaphore
 
 import click
 import requests
@@ -24,6 +25,7 @@ class FileUploading:
         self.user = user
         self.auth_token = auth_token
         self.base_url = base_url
+        self.semaphore = BoundedSemaphore(2 * 4)
 
     def run(self):
         init()
@@ -42,19 +44,28 @@ class FileUploading:
                 with open(self.file, 'rb') as infile:
                     buf = infile.read(block_size)
                     while len(buf) > 0:
-                        uploads.append(
-                            executor.submit(self.process_chunk, self.base_url, auth, self.issue_key, buf, lock, t,
-                                            count))
-                        buf = infile.read(block_size)
-                    chunk_list = [future.result() for future in futures.as_completed(uploads)]
+                        self.semaphore.acquire()
+                        try:
+                            future = executor.submit(self.process_chunk, self.base_url, auth, self.issue_key, buf, lock, t, count)
+                            uploads.append(future)
+                            buf = infile.read(block_size)
+                        except:
+                            self.semaphore.release()
+                            raise
+                        else:
+                            future.add_done_callback(lambda x: self.semaphore.release())
+                chunk_list = [future.result() for future in futures.as_completed(uploads)]
             self.create_file_chunked(self.base_url, auth, chunk_list, self.file, self.issue_key)
             t.update(1)
             t.close()
             click.echo('The file has been successfully uploaded and attached to the ticket %s' % self.issue_key)
         except AuthException as e:
             t.close()
-            print(Fore.RED + "[ERROR] Authentication error. Check your API credentials.")
-            raise AuthException(e.message)
+            print(Fore.RED + "[ERROR] Authentication error. Check your API credentials.")   
+            raise e         
+        except Exception as e:
+            print(Fore.RED + "[ERROR] " + str(e))
+            raise e
 
     def process_chunk(self, base_url, auth, issue_key, buf, lock, progress, count):
         index = next(count)
@@ -107,7 +118,7 @@ class FileUploading:
         if status_code == 401:
             raise AuthException("Authentication required")
         if not (status_code == 200 or status_code == 201):
-            raise Exception('Could not upload file, please try later again')
+            raise Exception('Could not upload file, please try later again. status code: {0}'.format(status_code))
 
     @staticmethod
     def __get_chunks_json(chunk_list):
