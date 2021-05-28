@@ -25,7 +25,7 @@ class FileUploading:
         self.user = user
         self.auth_token = auth_token
         self.base_url = base_url
-        self.semaphore = BoundedSemaphore(2 * 4)
+        self.semaphore = BoundedSemaphore(2)
 
     def run(self):
         init()

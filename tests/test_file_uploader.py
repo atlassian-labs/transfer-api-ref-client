@@ -45,7 +45,7 @@ class TestMain(unittest.TestCase):
         result = self.runner.invoke(command, args=self.cli_args)
 
         self.assertEqual(requests_post.call_count, 6)
-        self.assertEqual(result.exception.args[0], "Could not upload file, please try later again")
+        self.assertEqual(result.exception.args[0], "Could not upload file, please try later again. status code: 500")
         self.assertEqual(1, result.exit_code)
 
 
