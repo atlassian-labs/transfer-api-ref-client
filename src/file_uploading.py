@@ -25,7 +25,7 @@ class FileUploading:
         self.user = user
         self.auth_token = auth_token
         self.base_url = base_url
-        self.semaphore = BoundedSemaphore(2)
+        self.semaphore = BoundedSemaphore(8)
 
     def run(self):
         init()
@@ -39,7 +39,7 @@ class FileUploading:
         t.set_description("Uploading progress")
         count = itertools.count()
         try:
-            with ThreadPoolExecutor(max_workers=2) as executor:
+            with ThreadPoolExecutor(max_workers=4) as executor:
                 uploads = []
                 with open(self.file, 'rb') as infile:
                     buf = infile.read(block_size)
