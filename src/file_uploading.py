@@ -55,7 +55,8 @@ class FileUploading:
                         else:
                             future.add_done_callback(lambda x: self.semaphore.release())
                 chunk_list = [future.result() for future in futures.as_completed(uploads)]
-            self.create_file_chunked(self.base_url, auth, chunk_list, self.file, self.issue_key)
+            upload_id = self.create_upload(self.base_url, auth,self.issue_key)
+            self.create_file_chunked(self.base_url, auth, chunk_list, self.file, self.issue_key, upload_id)
             t.update(1)
             t.close()
             click.echo('The file has been successfully uploaded and attached to the ticket %s' % self.issue_key)
@@ -78,7 +79,7 @@ class FileUploading:
         return etag, index
 
     @retry(wait_exponential_multiplier=1000, wait_exponential_max=5000, stop_max_attempt_number=5)
-    def create_file_chunked(self, base_url, auth, chunk_list, file, issue_key):
+    def create_file_chunked(self, base_url, auth, chunk_list, file, issue_key,upload_id):
         chunk_list.sort(key=itemgetter(1))
 
         etagList = []
@@ -89,6 +90,9 @@ class FileUploading:
         response = requests.post(base_url + "/api/upload/" + issue_key + "/file/chunked",
                                  auth=auth,
                                  headers=headers,
+                                 params= {
+                                    "uploadId": upload_id
+                                 },
                                  json={"chunks": self.__get_chunks_json(etagList),
                                        "name": os.path.basename(file),
                                        "mimeType": from_file(file, mime=True)})
@@ -110,8 +114,20 @@ class FileUploading:
         response = requests.post(base_url + "/api/upload/" + issue_key + "/chunk/" + etag,
                                  auth=auth,
                                  stream=True,
+                                  params= {
+                                     "uploadId": upload_id,
+                                     "partNumber":part_number
+                                  },
                                  files={"chunk": io.BytesIO(buf)})
         self.__check_status_code(response.status_code)
+
+    @retry(wait_exponential_multiplier=100, wait_exponential_max=5000, stop_max_attempt_number=5)
+    def create_upload(self, base_url, auth, issue_key):
+        response = requests.post(base_url + "/api/upload/" + issue_key,
+                                 auth=auth
+                                 )
+        self.__check_status_code(response.status_code)
+        return response
 
     @staticmethod
     def __check_status_code(status_code):
