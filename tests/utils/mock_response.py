@@ -39,4 +39,7 @@ def mocked_request_500(*args, **kwargs):
         def json(self):
             return self.data
 
-    return MockResponse({}, 500)
+    if "/chunk" in args[0]:
+        return MockResponse({}, 500)
+    else:
+        return MockResponse({"upaload_id"}, 200)
