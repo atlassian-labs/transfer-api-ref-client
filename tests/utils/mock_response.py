@@ -42,4 +42,4 @@ def mocked_request_500(*args, **kwargs):
     if "/chunk" in args[0]:
         return MockResponse({}, 500)
     else:
-        return MockResponse({"upaload_id"}, 200)
+        return MockResponse({"upaloadId": "upload_id"}, 200)
