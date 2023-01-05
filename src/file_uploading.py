@@ -38,7 +38,7 @@ class FileUploading:
         t = tqdm(total=expected_chunks, unit='B', unit_scale=False)
         t.set_description("Uploading progress")
         count = itertools.count()
-        upload_id = self.create_upload(self.base_url, auth, self.issue_key)
+        upload_id = self.create_upload(self.base_url, auth, self.issue_key)['uploadId']
         try:
             with ThreadPoolExecutor(max_workers=4) as executor:
                 uploads = []
@@ -120,7 +120,7 @@ class FileUploading:
 
     def create_upload(self, base_url, auth, issue_key):
         headers = {"Content-Type": "application/json"}
-        response = requests.post(base_url + "/api/upload/" + issue_key,
+        response = requests.post(base_url + "/api/upload/" + issue_key + "/create",
                                  auth=auth,
                                  headers=headers)
         self.__check_status_code(response.status_code)
