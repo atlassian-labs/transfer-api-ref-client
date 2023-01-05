@@ -28,6 +28,7 @@ class FileUploading:
         self.semaphore = BoundedSemaphore(8)
 
     def run(self):
+        print(Fore.BLUE + "[Starting] ")
         init()
         auth = (self.user, self.auth_token)
         block_size = FileService.get_block_size(self.file)
