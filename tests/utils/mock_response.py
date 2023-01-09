@@ -25,6 +25,8 @@ def mocked_request(*args, **kwargs):
         etag = kwargs["json"]["chunks"][0]["hash"]
         size = kwargs["json"]["chunks"][0]["size"]
         return MockResponse({"data": {"results": {etag + "-" + size: {"exists": False}}}}, 200)
+    if "/api/upload/" in args[0]:
+        return MockResponse({"uploadId": "upload_id"}, 200)
     else:
         return MockResponse({}, 201)
 
@@ -42,4 +44,4 @@ def mocked_request_500(*args, **kwargs):
     if "/chunk" in args[0]:
         return MockResponse({}, 500)
     else:
-        return MockResponse({"upaload_id"}, 200)
+        return MockResponse({"uploadId": "upload_id"}, 200)
