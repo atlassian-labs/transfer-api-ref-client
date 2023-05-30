@@ -30,8 +30,8 @@ class FileUploading:
     def run(self):
         init()
         auth = (self.user, self.auth_token)
-        block_size = FileService.get_block_size(self.file)
         file_size = os.path.getsize(self.file)
+        block_size = FileService.get_block_size(file_size)
         expected_chunks = (file_size // block_size) + 1
         lock = Lock()
         click.echo('Preparing file to upload: %s' % click.format_filename(self.file))
