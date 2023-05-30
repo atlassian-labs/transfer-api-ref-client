@@ -8,10 +8,11 @@ Welcome to the reference API client implementation for the [transfer.atlassian.c
 The tool performs file upload by chunks and can resume file upload after failures. If you are faced with failure during file upload, you can run the tool again and the tool skip chunks uploaded before and upload the missed file fragments automatically.
 
 ## Usage (simple)
+1. Install the client. Refer: [Installation](#Installation)
 
-First, obtain an API token from transfer.atlassian.com/auth_token
+2. First, obtain an API token from transfer.atlassian.com/auth_token
 
-Then use your favorite terminal to run the reference client to upload one or multiple files:
+3. Then use your favorite terminal to run the reference client to upload one or multiple files:
 
 ```
 python app.py \
