@@ -1,10 +1,12 @@
 import unittest
-from unittest.mock import patch
 
 from src.file_service import FileService
 
 
 class TestClass(unittest.TestCase):
+    MB_TO_BYTES_MULTIPLIER = 1 * 1024 * 1024
+    GB_TO_BYTES_MULTIPLIER = 1 * 1024 * MB_TO_BYTES_MULTIPLIER
+    TB_TO_BYTES_MULTIPLIER = 1 * 1024 * GB_TO_BYTES_MULTIPLIER
 
     def test_generate_etag(self):
         expected_etag = 'a17c9aaa61e80a1bf71d0d850af4e5baa9800bbd-4'
@@ -12,6 +14,38 @@ class TestClass(unittest.TestCase):
         actual_etag = FileService.generate_etag(b'data')
 
         self.assertEqual(expected_etag, actual_etag)
+
+    def test_default_block_size(self):
+        file_size_byte = 2 * self.MB_TO_BYTES_MULTIPLIER
+        expected_block_size_byte = 5 * self.MB_TO_BYTES_MULTIPLIER
+
+        actual_block_size_byte = FileService.get_block_size(file_size_byte)
+
+        self.assertEqual(expected_block_size_byte, actual_block_size_byte)
+
+    def test_block_size_less_than_50_gb_file(self):
+        file_size_byte = 50 * self.GB_TO_BYTES_MULTIPLIER
+        expected_block_size_byte = 50 * self.MB_TO_BYTES_MULTIPLIER
+
+        actual_block_size_byte = FileService.get_block_size(file_size_byte)
+
+        self.assertEqual(expected_block_size_byte, actual_block_size_byte)
+
+    def test_block_size_less_than_950_gb_file(self):
+        file_size_byte = 960 * self.GB_TO_BYTES_MULTIPLIER
+        expected_block_size_byte = 100 * self.MB_TO_BYTES_MULTIPLIER
+
+        actual_block_size_byte = FileService.get_block_size(file_size_byte)
+
+        self.assertEqual(expected_block_size_byte, actual_block_size_byte)
+
+    def test_block_size_less_than_2_tb_file(self):
+        file_size_byte = 2 * self.TB_TO_BYTES_MULTIPLIER
+        expected_block_size_byte = 210 * self.MB_TO_BYTES_MULTIPLIER
+
+        actual_block_size_byte = FileService.get_block_size(file_size_byte)
+
+        self.assertEqual(expected_block_size_byte, actual_block_size_byte)
 
 
 if __name__ == '__main__':

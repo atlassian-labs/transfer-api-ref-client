@@ -1,13 +1,21 @@
 import hashlib
-import os
+import math
 
 
 class FileService:
     @staticmethod
-    def get_block_size(file_name):
-        default_block_size = 10 * 1024 * 1024  # default chunk size of 4MB to get the most benefit out of deduplication
-
-        return default_block_size
+    def get_block_size(file_size):
+        file_size_in_mb = file_size / (1024 * 1024)
+        block_size = math.ceil(file_size_in_mb / 10000)
+        if block_size < 5:
+            block_size = 5
+        elif block_size < 50:
+            block_size = 50
+        elif block_size < 100:
+            block_size = 100
+        else:
+            block_size = 210
+        return block_size * (1024 * 1024)
 
     @staticmethod
     def generate_etag(buf):
