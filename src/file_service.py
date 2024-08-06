@@ -19,8 +19,8 @@ class FileService:
 
     @staticmethod
     def generate_etag(buf):
-        sha1 = hashlib.sha1()
-        sha1.update(buf)
-        etag = sha1.hexdigest() + "-" + str(len(buf))
+        sha256 = hashlib.sha256()
+        sha256.update(buf)
+        etag = sha256.hexdigest() + "-" + str(len(buf))
 
         return etag
