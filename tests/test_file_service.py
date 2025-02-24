@@ -9,7 +9,7 @@ class TestClass(unittest.TestCase):
     TB_TO_BYTES_MULTIPLIER = 1 * 1024 * GB_TO_BYTES_MULTIPLIER
 
     def test_generate_etag(self):
-        expected_etag = 'a17c9aaa61e80a1bf71d0d850af4e5baa9800bbd-4'
+        expected_etag = '3a6eb0790f39ac87c94f3856b2dd2c5d110e6811602261a9a923d3bb23adc8b7-4'
 
         actual_etag = FileService.generate_etag(b'data')
 
