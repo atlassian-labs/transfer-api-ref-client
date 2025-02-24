@@ -55,6 +55,16 @@ Steps:
 1. (Optional) Run tests to ensure your environment is working properly
 
        python -m unittest tests/*.py -v
+Note: 
+If you encounter cryptography depedency installation error as below,
+```  note: This error originates from a subprocess, and is likely not a problem with pip.
+     ERROR: Failed building wheel for cryptography
+     Failed to build cryptography
+```
+you might need to manually install cryptography using
+```
+pip3 install cryptography
+```
 
 ## Development
 
@@ -72,6 +82,26 @@ $ python -m unittest tests/*.py -v
 The existing tests are located in the `tests/`  folder. They do not actually check full connectivity to the API but check the contract implementation.
 
 You can run the tests using: `python -m unittest tests/*.py -v`
+
+Note:
+If you encounter `libmagic` issues while running the tests and see below error
+```'failed to find libmagic.  Check your installation'```
+Then, you will need to install `libmagic`. You can do that using 
+### Mac
+```
+brew install libmagic
+```
+
+### Debian/Ubuntu
+```
+sudo apt-get update
+sudo apt-get install libmagic1 libmagic-dev
+```
+
+### Windows 
+```
+pip install python-magic-bin
+```
 
 ## Contributions
 
