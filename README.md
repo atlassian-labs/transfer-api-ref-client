@@ -1,6 +1,6 @@
 # transfer-api-ref-client
 
-[![Atlassian license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](LICENSE) ![version](https://img.shields.io/badge/version-0.1-blue.svg?style=flat-square) ![Python version](https://img.shields.io/badge/Python-3.3.7-blue.svg?style=flat-square) ![Build Status](https://img.shields.io/github/workflow/status/atlassian-labs/transfer-api-ref-client/transfer-api-ref-client/master?style=flat-square)
+[![Atlassian license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](LICENSE) ![version](https://img.shields.io/badge/version-0.1-blue.svg?style=flat-square) ![Python version](https://img.shields.io/badge/Python-3.3.7-blue.svg?style=flat-square) ![Build Status](https://img.shields.io/github/actions/workflow/status/atlassian-labs/transfer-api-ref-client/python-app.yml?branch=master&style=flat-square)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 
 Welcome to the reference API client implementation for the [transfer.atlassian.com REST API](https://transfer.atlassian.com/swagger-ui/index.html?configUrl=/api-docs/swagger-config). This client is provided as a reference implementation for the provided [REST API](https://transfer.atlassian.com/swagger-ui/index.html?configUrl=/api-docs/swagger-config) which allows resumable and chunked file uploads to https://transfer.atlassian.com. It is provided as a command-line tool (CLI).
