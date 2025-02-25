@@ -72,7 +72,8 @@ class FileUploading:
         index = next(count) + 1
         etag = FileService.generate_etag(buf)
         response = self.check_if_chunk_exists(base_url, auth, issue_key, [etag], upload_id)
-        if not response["data"]["results"][etag]["exists"]:
+        etagKey = "sha256-" + etag
+        if not response["data"]["results"][etagKey]["exists"]:
             self.upload_chunk(base_url, auth, issue_key, etag, buf, upload_id, index)
         with lock:
             progress.update(1)
