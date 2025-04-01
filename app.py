@@ -7,7 +7,7 @@ import sys
 sys.tracebacklimit = 0
 
 @click.command()
-@click.option("--file", required=True)
+@click.option("--file", required=True, multiple=True)
 @click.option("--issue_key", required=True)
 @click.option("--user", required=True,
               help="You can find user name on the page https://transfer.atlassian.com/auth_token")
@@ -15,7 +15,8 @@ sys.tracebacklimit = 0
               help="You can generate an auth token here https://transfer.atlassian.com/auth_token")
 @click.option("--base_url", default="https://transfer.atlassian.com")
 def command(file, issue_key, user, auth_token, base_url):
-    FileUploading(file, issue_key, user, auth_token, base_url).run()
+    for individual_file in file:
+        FileUploading(individual_file, issue_key, user, auth_token, base_url).run()
 
 
 if __name__ == "__main__":

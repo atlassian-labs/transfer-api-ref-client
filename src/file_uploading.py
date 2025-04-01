@@ -59,7 +59,7 @@ class FileUploading:
             self.create_file_chunked(self.base_url, auth, chunk_list, self.file, self.issue_key, upload_id)
             t.update(1)
             t.close()
-            click.echo('The file has been successfully uploaded and attached to the ticket %s' % self.issue_key)
+            click.echo('The file %s has been successfully uploaded and attached to the ticket %s' % (self.file, self.issue_key))
         except AuthException as e:
             t.close()
             print(Fore.RED + "[ERROR] Authentication error. Check your API credentials.")   
