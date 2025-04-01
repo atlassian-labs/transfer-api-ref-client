@@ -1,6 +1,6 @@
 # transfer-api-ref-client
 
-[![Atlassian license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](LICENSE) ![version](https://img.shields.io/badge/version-0.1-blue.svg?style=flat-square) ![Python version](https://img.shields.io/badge/Python-3.3.7-blue.svg?style=flat-square) ![Build Status](https://img.shields.io/github/workflow/status/atlassian-labs/transfer-api-ref-client/transfer-api-ref-client/master?style=flat-square)
+[![Atlassian license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](LICENSE) ![version](https://img.shields.io/badge/version-0.1-blue.svg?style=flat-square) ![Python version](https://img.shields.io/badge/Python-3.3.7-blue.svg?style=flat-square) ![Build Status](https://img.shields.io/github/actions/workflow/status/atlassian-labs/transfer-api-ref-client/python-app.yml?branch=master&style=flat-square)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 
 Welcome to the reference API client implementation for the [transfer.atlassian.com REST API](https://transfer.atlassian.com/swagger-ui/index.html?configUrl=/api-docs/swagger-config). This client is provided as a reference implementation for the provided [REST API](https://transfer.atlassian.com/swagger-ui/index.html?configUrl=/api-docs/swagger-config) which allows resumable and chunked file uploads to https://transfer.atlassian.com. It is provided as a command-line tool (CLI).
@@ -55,6 +55,16 @@ Steps:
 1. (Optional) Run tests to ensure your environment is working properly
 
        python -m unittest tests/*.py -v
+Note: 
+If you encounter cryptography depedency installation error as below,
+```  note: This error originates from a subprocess, and is likely not a problem with pip.
+     ERROR: Failed building wheel for cryptography
+     Failed to build cryptography
+```
+you might need to manually install cryptography using
+```
+pip3 install cryptography
+```
 
 ## Development
 
@@ -72,6 +82,26 @@ $ python -m unittest tests/*.py -v
 The existing tests are located in the `tests/`  folder. They do not actually check full connectivity to the API but check the contract implementation.
 
 You can run the tests using: `python -m unittest tests/*.py -v`
+
+Note:
+If you encounter `libmagic` issues while running the tests and see below error
+```'failed to find libmagic.  Check your installation'```
+Then, you will need to install `libmagic`. You can do that using 
+### Mac
+```
+brew install libmagic
+```
+
+### Debian/Ubuntu
+```
+sudo apt-get update
+sudo apt-get install libmagic1 libmagic-dev
+```
+
+### Windows 
+```
+pip install python-magic-bin
+```
 
 ## Contributions
 
