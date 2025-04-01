@@ -11,7 +11,7 @@ from tests.utils.mock_response import mocked_request_500, mocked_request, mocked
 @patch("builtins.open")
 @patch("os.path.getsize")
 class TestMain(unittest.TestCase):
-    cli_args = ["--file=test", "--issue_key=DATA-777", "--user=bob", "--auth_token=builder"]
+    cli_args = ["--file=README.md", "--issue_key=DATA-777", "--user=bob", "--auth_token=builder"]
 
     def setUp(self):
         self.runner = CliRunner()

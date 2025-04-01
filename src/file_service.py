@@ -6,7 +6,7 @@ class FileService:
     @staticmethod
     def get_block_size(file_size):
         file_size_in_mb = file_size / (1024 * 1024)
-        block_size = math.ceil(file_size_in_mb / 10000)
+        block_size = math.ceil(file_size_in_mb / 1000)
         if block_size < 5:
             block_size = 5
         elif block_size < 50:

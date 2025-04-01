@@ -59,7 +59,7 @@ class FileUploading:
             self.create_file_chunked(self.base_url, auth, chunk_list, self.file, self.issue_key, upload_id)
             t.update(1)
             t.close()
-            click.echo('The file has been successfully uploaded and attached to the ticket %s' % self.issue_key)
+            click.echo('The file %s has been successfully uploaded and attached to the ticket %s' % (self.file, self.issue_key))
         except AuthException as e:
             t.close()
             print(Fore.RED + "[ERROR] Authentication error. Check your API credentials.")   
@@ -72,7 +72,8 @@ class FileUploading:
         index = next(count) + 1
         etag = FileService.generate_etag(buf)
         response = self.check_if_chunk_exists(base_url, auth, issue_key, [etag], upload_id)
-        if not response["data"]["results"][etag]["exists"]:
+        etagKey = "sha256-" + etag
+        if not response["data"]["results"][etagKey]["exists"]:
             self.upload_chunk(base_url, auth, issue_key, etag, buf, upload_id, index)
         with lock:
             progress.update(1)
